@@ -3,7 +3,7 @@
 
 export class Video {
 
-    constructor(url) {
+    constructor() {
 
         this.videoElement= document.createElement('video')
         this.canvas = document.createElement('canvas')
@@ -11,12 +11,6 @@ export class Video {
 
         this.width= 640
         this.height= 480
-
-        this.videoElement.width= this.width
-        this.videoElement.height= this.height
-        this.videoElement.muted= true
-        this.videoElement.loop= true
-        this.videoElement.src= url
 
         this.stream= null
 
@@ -60,7 +54,30 @@ export class Video {
         }
 
         this.frameListeners= []
-        console.log("THIS SHOULD STOP THE VIDEO")
+    }
+
+    setStream(stream) {
+
+        this.stream= stream
+        this.videoElement.srcObject= stream
+    }
+
+    initStream = async () =>{
+
+        this.stream= await navigator.mediaDevices.getUserMedia({video: true})
+        this.videoElement.srcObject= this.stream
+        this.videoElement.width= this.width
+        this.videoElement.height= this.height
+    }
+
+    initVideo(url){
+
+        this.videoElement.width= this.width
+        this.videoElement.height= this.height
+        this.videoElement.muted= true
+        this.videoElement.loop= true
+        this.videoElement.src= url
+
     }
 
     processVideo = async () => {
@@ -79,5 +96,6 @@ export class Video {
         }
         requestAnimationFrame(frame)
     }
+
 
 }

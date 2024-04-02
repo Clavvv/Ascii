@@ -8,6 +8,7 @@ export default function Home() {
   const [fileError, setFileError]= useState(false)
   const [asciiArt, setAsciiArt]= useState(null)
   const [videoIsPlaying, setVideoIsPlaying]= useState(false)
+  const [toggleWebcam, setToggleWebcam]= useState("Start")
 
   const videoProcessorRef= useRef(null)
 
@@ -77,33 +78,32 @@ export default function Home() {
 
 
     e.preventDefault()
+    setToggleWebcam("Start")
 
     const file= e.target.files[0]
     const reader= new FileReader()
 
-    if (videoIsPlaying) {
-          
-      console.log("PRE STOP VIDEO")
-      videoProcessorRef.current.stop()
-      console.log("POST STOP VIDEO")
-      videoProcessorRef.current= null
-      setVideoIsPlaying(false)
-    }
-
     if (!file) {
 
-      setFileError(true)
+      setFileError("there was an error selecting your file")
       return
 
     } else if ((file.type !== 'image/jpeg' && file.type !== 'image/png') || file.size > 100000000 ) {
 
-      setFileError(true)
+      setFileError("invalid file type or size")
       return 
 
     } else {
+      
+        if (videoIsPlaying) {
+          
+        videoProcessorRef.current.stop()
+        videoProcessorRef.current= null
+        setVideoIsPlaying(false)
+      }
 
       setAsciiArt(null)
-      setFileError(false);
+      setFileError(null);
         reader.onload = async (e) => {
             const image = new Image()
             image.onload = async () => {
@@ -131,8 +131,20 @@ export default function Home() {
   const handleVideoUpload = async (e) => {
 
     e.preventDefault()
+    setToggleWebcam("Start")
 
     const file= e.target.files[0]
+
+    if (!file) {
+
+      setFileError("there was an error selecting your file")
+      return
+    } else if (file.type !== 'video/mp4') {
+
+      setFileError("invalid file type or size")
+      return
+
+    }
 
     if (videoIsPlaying) {
         
@@ -141,23 +153,15 @@ export default function Home() {
         setVideoIsPlaying(false)
     }
 
-    if (!file) {
-
-      setFileError(true)
-      return
-    } else if (file.type !== 'video/mp4') {
-
-      setFileError(true)
-      return
-
-    }
+    setFileError(null)
 
     const reader= new FileReader()
     reader.readAsDataURL(file)
 
     reader.onload = (e) => {
 
-      const videoPlayer= new Video(e.target.result)
+      const videoPlayer= new Video()
+      videoPlayer.initVideo(e.target.result)
       videoPlayer.addFrameListener((frame) => {
         
         const asciiString= convertToAscii(frame)
@@ -171,6 +175,61 @@ export default function Home() {
     }
 
   }
+
+  const handleWebCam = async (e) => {
+
+    if (toggleWebcam !== "Start") {
+          
+          videoProcessorRef.current.stop()
+          videoProcessorRef.current= null
+          setVideoIsPlaying(false)
+          setToggleWebcam("Start")
+          setAsciiArt(null)
+          return
+
+      } else if (toggleWebcam === "Stop") {
+
+        setToggleWebcam("Start")
+        setVideoIsPlaying(false)
+
+        videoProcessorRef.getTracks().forEach(track => track.stop())
+        videoProcessorRef.current= null
+        setAsciiArt(null)
+        return
+
+      } else if (videoIsPlaying) {
+          
+          videoProcessorRef.current.stop()
+          videoProcessorRef.current= null
+          setVideoIsPlaying(false)
+          setAsciiArt(null)
+      }
+
+    videoProcessorRef.current= null
+    const webcamMedia= new Video()
+
+    try {
+
+      setToggleWebcam("Stop")
+      await webcamMedia.initStream()
+      webcamMedia.start()
+
+      webcamMedia.addFrameListener((frame) => {
+
+        const asciiString= convertToAscii(frame)
+        setAsciiArt(asciiString)
+
+      })
+
+      setVideoIsPlaying(true)
+      videoProcessorRef.current= webcamMedia
+
+    } catch {
+      setFileError("there was an error accessing your webcam")
+
+    }
+
+}
   
 
 
@@ -178,7 +237,7 @@ export default function Home() {
   return (
     <main className="flex grow min-h-screen min-w-screen flex-col items-center pt-2 px-14 bg-zinc-900 overflow-hidden">
 
-      <pre className= "font-bold bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">{title}</pre>
+      <pre className= "font-bold bg-gradient-to-r from-rose-400 to-pink-500 via-cyan-400 text-transparent bg-clip-text">{title}</pre>
 
       <div className= "flex-col grow items-center justify-center p-10">
 
@@ -221,7 +280,7 @@ export default function Home() {
 
           </ul>
 
-          {fileError && (<p className= "text-center text-red-500 text-sm italic font-semibold">invalid file type or size</p>)}
+          {fileError && (<p className= "text-center text-red-500 text-sm italic font-semibold">{fileError}</p>)}
 
         </section>) : (
           <section className= "flex-row w-full h-full justify-evenly">
@@ -229,14 +288,15 @@ export default function Home() {
           <ul className= "flex flex-row justify-center place-items-center content-center items-center place-content-center">
 
             <li className= "rounded-md m-2 px-3 py-1 justify-center text-center hover:bg-zinc-500">
-
-              <button>
-                Start
+              <button onClick= {(e) => handleWebCam(e)}>
+                {toggleWebcam}
               </button>
 
             </li>
 
           </ul>
+
+          {fileError && (<p className= "text-center text-red-500 text-sm italic font-semibold">{fileError}</p>)}
 
         </section>)}
         {asciiArt && (<pre className= "text-white flex max-w-[40vw] max-h-[70vh] text-[3px] pt-5 m-5 justify-center overflow-auto">{asciiArt}</pre>)}
