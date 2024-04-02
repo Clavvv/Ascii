@@ -13,7 +13,7 @@ export default function Home() {
   const videoProcessorRef= useRef(null)
 
   const isSelected= "border bg-zinc-600 rounded-md mx-2 p-1 border-purple-700 justify-center place-self-center text-white"
-  const notSelected= "border border-zinc-900 rounded-md mx-2 p-1 justify-center place-self-center"
+  const notSelected= "border border-zinc-900 rounded-md mx-2 p-1 justify-center place-self-center text-white"
 
   const title= `
    _____                .__.__ 
@@ -264,7 +264,7 @@ export default function Home() {
 
             <li className= "rounded-md m-2 px-3 py-1 justify-center text-center hover:bg-zinc-500">
 
-              <button className= "justify-center" onClick= {() => document.getElementById('image-input').click()}>
+              <button className= "text-white justify-center" onClick= {() => document.getElementById('image-input').click()}>
                 Image
               </button>
 
@@ -272,7 +272,7 @@ export default function Home() {
 
             <li className= "rounded-md m-2 px-3 py-1 justify-center text-center hover:bg-zinc-500">
 
-              <button className= "justify-center" onClick= {() => document.getElementById('video-input').click()}>
+              <button className= "text-white justify-center" onClick= {() => document.getElementById('video-input').click()}>
                 Video
               </button>
 
@@ -288,7 +288,7 @@ export default function Home() {
           <ul className= "flex flex-row justify-center place-items-center content-center items-center place-content-center">
 
             <li className= "rounded-md m-2 px-3 py-1 justify-center text-center hover:bg-zinc-500">
-              <button onClick= {(e) => handleWebCam(e)}>
+              <button className= "text-white" onClick= {(e) => handleWebCam(e)}>
                 {toggleWebcam}
               </button>
 
