@@ -7,11 +7,23 @@ export default function Home() {
   const [selected, setSelected] = useState(1)
   const [fileError, setFileError]= useState(false)
   const [asciiArt, setAsciiArt]= useState(null)
+  const [videoIsPlaying, setVideoIsPlaying]= useState(false)
 
   const videoProcessorRef= useRef(null)
 
   const isSelected= "border bg-zinc-600 rounded-md mx-2 p-1 border-purple-700 justify-center place-self-center text-white"
-  const notSelected= "border border-zinc-900 rounded-md mx-2 p-1 justify-center place-self-center "
+  const notSelected= "border border-zinc-900 rounded-md mx-2 p-1 justify-center place-self-center"
+
+  const title= `
+   _____                .__.__ 
+  /  _  \\   ______ ____ |__|__|
+ /  /_\\  \\ /  ____/ ___\\|  |  |
+/    |    \\\\___ \\\\  \\___|  |  |
+\\____|__  /____  >\\___  |__|__|
+        \\/     \\/     \\/        `
+
+
+
 
   const brightnessToAscii = (levels) => {
 
@@ -61,13 +73,22 @@ export default function Home() {
 
   }
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
 
 
     e.preventDefault()
 
     const file= e.target.files[0]
     const reader= new FileReader()
+
+    if (videoIsPlaying) {
+          
+      console.log("PRE STOP VIDEO")
+      videoProcessorRef.current.stop()
+      console.log("POST STOP VIDEO")
+      videoProcessorRef.current= null
+      setVideoIsPlaying(false)
+    }
 
     if (!file) {
 
@@ -113,6 +134,13 @@ export default function Home() {
 
     const file= e.target.files[0]
 
+    if (videoIsPlaying) {
+        
+        videoProcessorRef.current.stop()
+        videoProcessorRef.current= null
+        setVideoIsPlaying(false)
+    }
+
     if (!file) {
 
       setFileError(true)
@@ -129,16 +157,15 @@ export default function Home() {
 
     reader.onload = (e) => {
 
-      console.log(e.target.result)
       const videoPlayer= new Video(e.target.result)
-
       videoPlayer.addFrameListener((frame) => {
         
         const asciiString= convertToAscii(frame)
         setAsciiArt(asciiString)
       })
-
-
+    
+    setVideoIsPlaying(true)
+    videoProcessorRef.current= videoPlayer
     videoPlayer.start()
 
     }
@@ -149,16 +176,9 @@ export default function Home() {
 
 
   return (
-    <main className="flex grow min-h-screen min-w-screen flex-col items-center pt-14 px-14 bg-zinc-900 overflow-hidden">
+    <main className="flex grow min-h-screen min-w-screen flex-col items-center pt-2 px-14 bg-zinc-900 overflow-hidden">
 
-      <p>
-        <span className= "text-4xl tracking-widest font-bold italic font-system-ui bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
-          A
-        </span>
-        <span className= "text-2xl font-semibold tracking-widest font-system-ui bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">
-          scii
-        </span>
-      </p>
+      <pre className= "font-bold bg-gradient-to-r from-purple-400 to-pink-500 text-transparent bg-clip-text">{title}</pre>
 
       <div className= "flex-col grow items-center justify-center p-10">
 

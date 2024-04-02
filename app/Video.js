@@ -14,7 +14,7 @@ export class Video {
 
         this.videoElement.width= this.width
         this.videoElement.height= this.height
-        this.videoElement.muted= false
+        this.videoElement.muted= true
         this.videoElement.loop= true
         this.videoElement.src= url
 
@@ -60,6 +60,7 @@ export class Video {
         }
 
         this.frameListeners= []
+        console.log("THIS SHOULD STOP THE VIDEO")
     }
 
     processVideo = async () => {
