@@ -6,7 +6,7 @@ This project is an ASCII generator built with React, capable of converting image
 
 - Convert images into ASCII art.
 - Convert videos into ASCII art.
-- Convert live webcam frames into ASCII art.
+- Convert live webcam into ASCII art.
 
 ## Usage
 
