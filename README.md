@@ -38,8 +38,6 @@ You can view this site locally by following the steps below, or by visiting http
 
 5. Open your browser and visit `http://localhost:3000`.
 
-6. Upload an image, video, or enable webcam access to generate ASCII art.
-
 ## Technologies Used
 
 - React
