@@ -9,11 +9,13 @@ export default function Home() {
   const [asciiArt, setAsciiArt]= useState(null)
   const [videoIsPlaying, setVideoIsPlaying]= useState(false)
   const [toggleWebcam, setToggleWebcam]= useState("Start")
+  const [fatalWebcamError, setFatalWebcamError]= useState(false)
 
   const videoProcessorRef= useRef(null)
 
   const isSelected= "border bg-zinc-600 rounded-md mx-2 p-1 border-purple-700 justify-center place-self-center text-white"
   const notSelected= "border border-zinc-900 rounded-md mx-2 p-1 justify-center place-self-center text-white"
+
 
   const title= `
    _____                .__.__ 
@@ -178,24 +180,25 @@ export default function Home() {
 
   const handleWebCam = async (e) => {
 
-    if (toggleWebcam !== "Start") {
-          
+    if (toggleWebcam === "Stop") {
+
+        if (videoProcessorRef.current) {
+
           videoProcessorRef.current.stop()
           videoProcessorRef.current= null
           setVideoIsPlaying(false)
           setToggleWebcam("Start")
           setAsciiArt(null)
           return
+        } else {
 
-      } else if (toggleWebcam === "Stop") {
-
-        setToggleWebcam("Start")
-        setVideoIsPlaying(false)
-
-        videoProcessorRef.getTracks().forEach(track => track.stop())
-        videoProcessorRef.current= null
-        setAsciiArt(null)
-        return
+          setToggleWebcam("Start")
+          setFileError("there was an error accessing your webcam, please refresh the page and try again")
+          setAsciiArt(null)
+          videoProcessorRef.current= null
+          return
+        }
+          
 
       } else if (videoIsPlaying) {
           
@@ -209,6 +212,7 @@ export default function Home() {
     const webcamMedia= new Video()
 
     try {
+      
 
       setToggleWebcam("Stop")
       await webcamMedia.initStream()
@@ -225,7 +229,8 @@ export default function Home() {
       videoProcessorRef.current= webcamMedia
 
     } catch {
-      setFileError("there was an error accessing your webcam")
+      setFatalWebcamError(true)
+      setFileError("there was an error accessing your webcam, please refresh the page and try again")
 
     }
 
@@ -288,10 +293,11 @@ export default function Home() {
           <ul className= "flex flex-row justify-center place-items-center content-center items-center place-content-center">
 
             <li className= "rounded-md m-2 px-3 py-1 justify-center text-center hover:bg-zinc-500">
+              {!fatalWebcamError ?
               <button className= "text-white" onClick= {(e) => handleWebCam(e)}>
                 {toggleWebcam}
               </button>
-
+              : <button className= "hidden" onClick= {(e) => handleWebCam(e)}>{toggleWebcam}</button>}
             </li>
 
           </ul>
