@@ -4,9 +4,13 @@ This project is an ASCII generator built with React, capable of converting image
 
 ## Features
 
-- Convert images into ASCII art.
-- Convert videos into ASCII art.
+- Convert PNG/JPG/MP4 form into ASCII art.
 - Convert live webcam into ASCII art.
+
+
+##Examples
+
+![](https://github.com/Clavvv/Ascii/blob/master/EXAMPLE.gif)
 
 ## Usage
 
