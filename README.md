@@ -8,9 +8,11 @@ This project is an ASCII generator built with React, capable of converting image
 - Convert live webcam into ASCII art.
 
 
-## Example
+## Examples
 
 ![](https://github.com/Clavvv/Ascii/blob/master/EXAMPLE.gif)
+
+![](https://github.com/Clavvv/Ascii/blob/master/EXAMPLEVIDEO.gif)
 
 ## Usage
 
